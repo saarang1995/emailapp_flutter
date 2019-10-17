@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:emailapp/models/Message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -12,13 +13,16 @@ class MessageList extends StatefulWidget {
 }
 
 class _MessageListState extends State<MessageList> {
-  List<dynamic> messages = const [];
+  var messages = const [];
 
   Future loadMessageList() async {
     String content = await rootBundle.loadString('data/message.json');
-    List<dynamic> collection = json.decode(content);
+    List collection = json.decode(content);
+    List<Message> _messages =
+        collection.map((json) => Message.fromJson(json)).toList();
+  
     setState(() {
-      messages = collection;
+      messages = _messages;
     });
   }
 
@@ -37,15 +41,15 @@ class _MessageListState extends State<MessageList> {
       body: ListView.separated(
         separatorBuilder: (context, index) => Divider(),
         itemBuilder: (BuildContext contex, int index) {
-          Map message = messages[index];
+          Message message = messages[index];
           return ListTile(
             leading: CircleAvatar(
               child: Text("PJ"),
             ),
             isThreeLine: true,
-            title: Text(message['subject']),
+            title: Text(message.subject),
             subtitle: Text(
-              message['body'],
+              message.body,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
