@@ -13,53 +13,64 @@ class MessageList extends StatefulWidget {
 }
 
 class _MessageListState extends State<MessageList> {
-  List<Message> messages = const [];
-
-  Future loadMessageList() async {
-    // String content = await rootBundle.loadString('data/message.json');
-    http.Response response =
-        await http.get('http://www.mocky.io/v2/5da864c71200001100edae5f');
-    String content = response.body;
-    List collection = json.decode(content);
-    List<Message> _messages =
-        collection.map((json) => Message.fromJson(json)).toList();
-
-    setState(() {
-      messages = _messages;
-    });
-  }
+  Future<List<Message>> messages;
 
   @override
   void initState() {
-    loadMessageList();
     super.initState();
+    messages = Message.browse();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: ListView.separated(
-        separatorBuilder: (context, index) => Divider(),
-        itemBuilder: (BuildContext contex, int index) {
-          Message message = messages[index];
-          return ListTile(
-            leading: CircleAvatar(
-              child: Text("PJ"),
-            ),
-            isThreeLine: true,
-            title: Text(message.subject),
-            subtitle: Text(
-              message.body,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          );
-        },
-        itemCount: messages.length,
-      ),
-    );
+        appBar: AppBar(
+          title: Text(widget.title),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () {
+                var _messages = Message.browse();
+                setState(() {
+                  messages = _messages;
+                });
+              },
+            )
+          ],
+        ),
+        body: FutureBuilder(
+          future: messages,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                return Center(child: CircularProgressIndicator());
+              case ConnectionState.done:
+                if (snapshot.hasError)
+                  return Text('There was an error !${snapshot.error}');
+                var messages = snapshot.data;
+                return ListView.separated(
+                  separatorBuilder: (context, index) => Divider(),
+                  itemBuilder: (BuildContext contex, int index) {
+                    Message message = messages[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        child: Text("PJ"),
+                      ),
+                      isThreeLine: true,
+                      title: Text(message.subject),
+                      subtitle: Text(
+                        message.body,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    );
+                  },
+                  itemCount: messages.length,
+                );
+            }
+          },
+        ));
   }
 }
