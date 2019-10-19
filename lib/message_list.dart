@@ -2,7 +2,6 @@ import 'package:emailapp/compose_button.dart';
 import 'package:emailapp/message_detail.dart';
 import 'package:emailapp/models/Message.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class MessageList extends StatefulWidget {
   final String title;
@@ -13,73 +12,85 @@ class MessageList extends StatefulWidget {
 }
 
 class _MessageListState extends State<MessageList> {
-  Future<List<Message>> messages;
+  Future<List<Message>> future;
+  List<Message> messages;
 
   @override
   void initState() {
     super.initState();
-    messages = Message.browse();
+    fetch();
+  }
+
+  fetch() async {
+    future = Message.browse();
+    messages = await future;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () {
-              var _messages = Message.browse();
-              setState(() {
-                messages = _messages;
-              });
-            },
-          )
-        ],
-      ),
-      body: FutureBuilder(
-        future: messages,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-              return Center(child: CircularProgressIndicator());
-            case ConnectionState.done:
-              if (snapshot.hasError)
-                return Text('There was an error !${snapshot.error}');
-              var messages = snapshot.data;
-              return ListView.separated(
-                separatorBuilder: (context, index) => Divider(),
-                itemBuilder: (BuildContext contex, int index) {
-                  Message message = messages[index];
-                  return ListTile(
-                    leading: CircleAvatar(
-                      child: Text("PJ"),
-                    ),
-                    isThreeLine: true,
-                    title: Text(message.subject),
-                    subtitle: Text(
-                      message.body,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => MessageDetail(
-                                  message.subject, message.body)));
-                    },
-                  );
-                },
-                itemCount: messages.length,
-              );
-          }
-        },
-      ),
-      floatingActionButton: ComposeButton(),
-    );
+        appBar: AppBar(
+          title: Text(widget.title),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () async {
+                var _messages = await Message.browse();
+                setState(() {
+                  messages = _messages;
+                });
+              },
+            )
+          ],
+        ),
+        body: FutureBuilder(
+          future: future,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                return Center(child: CircularProgressIndicator());
+              case ConnectionState.done:
+                if (snapshot.hasError)
+                  return Text('There was an error !${snapshot.error}');
+                var messages = snapshot.data;
+                return ListView.separated(
+                  separatorBuilder: (context, index) => Divider(),
+                  itemBuilder: (BuildContext contex, int index) {
+                    Message message = messages[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        child: Text("PJ"),
+                      ),
+                      isThreeLine: true,
+                      title: Text(message.subject),
+                      subtitle: Text(
+                        message.body,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    MessageDetail(
+                                        message.subject, message.body)));
+                      },
+                    );
+                  },
+                  itemCount: messages.length,
+                );
+            }
+          },
+        ),
+        floatingActionButton: FutureBuilder(
+            future: future,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return ComposeButton(messages);
+              }
+            }));
   }
 }
