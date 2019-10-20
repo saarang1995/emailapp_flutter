@@ -1,3 +1,4 @@
+import 'package:emailapp/contact_list_builder.dart';
 import 'package:emailapp/contact_manager.dart';
 import 'package:emailapp/contact_search_delegate.dart';
 import 'package:emailapp/models/Contact.dart';
@@ -9,58 +10,48 @@ class ContactsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Contacts'),
-        actions: <Widget>[
-          Chip(
-              backgroundColor: Colors.red,
-              label: StreamBuilder<int>(
-                  stream: contactManager.contactCounter,
-                  builder: (BuildContext context, snapshot) {
-                    return Text(
-                      (snapshot.data ?? 0).toString(),
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    );
-                  })),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              showSearch(
-                  context: context,
-                  delegate:
-                      ContactSearchDelegate(manager: this.contactManager));
-            },
-          ),
-          Padding(padding: EdgeInsets.only(right: 16)),
-        ],
-      ),
-      drawer: NavigationDrawer(),
-      body: StreamBuilder<List<Contact>>(
-          stream: contactManager.contactsListView,
-          builder:
-              (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-              case ConnectionState.waiting:
-              case ConnectionState.active:
-                return Center(child: CircularProgressIndicator());
-              case ConnectionState.done:
-                List<Contact> contacts = snapshot.data;
-                return ListView.separated(
-                    itemCount: contacts.length,
-                    itemBuilder: (BuildContext context, index) {
-                      Contact _contact = contacts[index];
-                      return ListTile(
-                        title: Text(_contact.name),
-                        subtitle: Text(_contact.email),
-                        leading: CircleAvatar(),
+        appBar: AppBar(
+          title: Text('Contacts'),
+          actions: <Widget>[
+            Chip(
+                backgroundColor: Colors.red,
+                label: StreamBuilder<int>(
+                    stream: contactManager.contactCounter,
+                    builder: (BuildContext context, snapshot) {
+                      return Text(
+                        (snapshot.data ?? 0).toString(),
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
                       );
-                    },
-                    separatorBuilder: (BuildContext context, int index) =>
-                        Divider());
-            }
-          }),
-    );
+                    })),
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                showSearch(
+                    context: context,
+                    delegate:
+                        ContactSearchDelegate(manager: this.contactManager));
+              },
+            ),
+            Padding(padding: EdgeInsets.only(right: 16)),
+          ],
+        ),
+        drawer: NavigationDrawer(),
+        body: ContactListBuilder(
+            stream: contactManager.contactsListView,
+            builder: (context, contacts) {
+              return ListView.separated(
+                  itemCount: contacts.length,
+                  itemBuilder: (BuildContext context, index) {
+                    Contact _contact = contacts[index];
+                    return ListTile(
+                      title: Text(_contact.name),
+                      subtitle: Text(_contact.email),
+                      leading: CircleAvatar(),
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) =>
+                      Divider());
+            }));
   }
 }
