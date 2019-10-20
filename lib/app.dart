@@ -1,35 +1,50 @@
-import 'package:emailapp/message_list.dart';
-import 'package:emailapp/navigation_drawer.dart';
+import 'package:emailapp/celendar_screen.dart';
+import 'package:emailapp/contacts_screen.dart';
+import 'package:emailapp/indox_screen.dart';
 import 'package:flutter/material.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _AppState();
+  }
+}
+
+class _AppState extends State {
+  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      child: Scaffold(
-        appBar: AppBar(
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: () async {},
-            )
-          ],
-          bottom: TabBar(
-            tabs: <Widget>[
-              Tab(text: "Important"),
-              Tab(text: "Others"),
-            ],
+    return Scaffold(
+      body: [
+        InboxScreen(),
+        ContactsScreen(),
+        CalendarScreen(),
+      ].elementAt(_selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.mail),
+            title: Text('Inbox'),
           ),
-        ),
-        drawer: NavigationDrawer(),
-        body: TabBarView(
-          children: <Widget>[
-            MessageList(status: "important"),
-            MessageList(status: "others")
-          ],
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            title: Text('Contacts'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            title: Text('Celendar'),
+          ),
+        ],
+        onTap: _onBarItemTap,
+        currentIndex: _selectedIndex,
       ),
-      length: 2,
     );
+  }
+
+  void _onBarItemTap(int value) {
+    setState(() {
+      _selectedIndex = value;
+    });
   }
 }
