@@ -1,19 +1,20 @@
 import 'dart:async';
 
-List<String> CONTACTS = ['User 1', "User 2", "User 3", "User 4"];
+import 'package:emailapp/models/Contact.dart';
+import 'package:emailapp/services/contact_service.dart';
 
 class ContactManager {
-  Stream<List<String>> get contactsListNow async* {
-    for (var i = 0; i < CONTACTS.length; i++) {
-      await Future.delayed(Duration(seconds: 2));
-      yield CONTACTS.sublist(0, i + 1);
-    }
-  }
+  Stream<List<Contact>> get contactsListView =>
+      Stream.fromFuture(ContactService.browse());
+
+  Stream<List<Contact>> filteredCollection({query}) =>
+      Stream.fromFuture(ContactService.browse(query: query));
 
   final StreamController _contactCounter = StreamController<int>();
+
   Stream<int> get contactCounter => _contactCounter.stream;
 
   ContactManager() {
-    contactsListNow.listen((data) => _contactCounter.add(data.length));
+    contactsListView.listen((data) => _contactCounter.add(data.length));
   }
 }
