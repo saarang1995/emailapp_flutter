@@ -3,14 +3,16 @@ import 'dart:async';
 import 'package:emailapp/models/Contact.dart';
 import 'package:emailapp/services/contact_service.dart';
 
+import 'package:rxdart/rxdart.dart';
+
 class ContactManager {
   Stream<List<Contact>> get contactsListView =>
       Stream.fromFuture(ContactService.browse());
 
-  Stream<List<Contact>> filteredCollection({query}) =>
+  Stream<List<Contact>> filteredView({query}) =>
       Stream.fromFuture(ContactService.browse(query: query));
 
-  final StreamController _contactCounter = StreamController<int>();
+  final BehaviorSubject<int> _contactCounter = BehaviorSubject<int>();
 
   Stream<int> get contactCounter => _contactCounter.stream;
 

@@ -14,7 +14,7 @@ class ContactService {
 
     if (query != null && query.isNotEmpty) {
       _contacts = _contacts
-          .where((contact) => contact.name.toLowerCase().contains(query));
+          .where((contact) => contact.name.toLowerCase().contains(query.toString().toLowerCase()));
     }
     return _contacts.toList();
   }
