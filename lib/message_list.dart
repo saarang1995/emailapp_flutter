@@ -1,4 +1,4 @@
-import 'package:emailapp/message_detail.dart';
+import 'package:emailapp/screens/message_detail.dart';
 import 'package:emailapp/models/Message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
