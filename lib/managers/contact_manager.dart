@@ -6,17 +6,17 @@ import 'package:emailapp/services/contact_service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ContactManager {
-  Stream<List<Contact>> get contactsListView =>
-      Stream.fromFuture(ContactService.browse());
+  // Stream<List<Contact>> get contactsListView =>
+  //     Stream.fromFuture(ContactService.browse());
 
-  Stream<List<Contact>> filteredView({query}) =>
+  Stream<List<Contact>> browse$({String query}) =>
       Stream.fromFuture(ContactService.browse(query: query));
 
   final BehaviorSubject<int> _contactCounter = BehaviorSubject<int>();
 
-  Stream<int> get contactCounter => _contactCounter.stream;
+  Stream<int> get count$ => _contactCounter.stream;
 
   ContactManager() {
-    contactsListView.listen((data) => _contactCounter.add(data.length));
+    browse$().listen((data) => _contactCounter.add(data.length));
   }
 }

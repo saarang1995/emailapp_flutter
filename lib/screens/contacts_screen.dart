@@ -1,6 +1,6 @@
 import 'package:emailapp/contact_counter.dart';
 import 'package:emailapp/contact_list_builder.dart';
-import 'package:emailapp/contact_manager.dart';
+import 'package:emailapp/managers/contact_manager.dart';
 import 'package:emailapp/screens/contact_search_delegate.dart';
 import 'package:emailapp/models/Contact.dart';
 import 'package:emailapp/navigation_drawer.dart';
@@ -27,7 +27,7 @@ class ContactsScreen extends StatelessWidget {
         ),
         drawer: NavigationDrawer(),
         body: ContactListBuilder(
-          stream: manager.contactsListView,
+          stream: manager.browse$(),
           builder: (context, contacts) {
             return ListView.separated(
                 itemCount: contacts.length,

@@ -1,5 +1,5 @@
 import 'package:emailapp/contact_list_builder.dart';
-import 'package:emailapp/contact_manager.dart';
+import 'package:emailapp/managers/contact_manager.dart';
 import 'package:emailapp/models/Contact.dart';
 import 'package:emailapp/provider.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +36,7 @@ class ContactSearchDelegate extends SearchDelegate {
     }
 
     return ContactListBuilder(
-        stream: manager.filteredView(query: query),
+        stream: manager.browse$(query: query),
         builder: (context, contacts) {
           return ListView.separated(
               itemCount: contacts.length,
