@@ -5,13 +5,12 @@ import 'package:emailapp/screens/contact_search_delegate.dart';
 import 'package:emailapp/models/Contact.dart';
 import 'package:emailapp/navigation_drawer.dart';
 import 'package:emailapp/provider.dart';
-import 'package:emailapp/overseer.dart';
 import 'package:flutter/material.dart';
 
 class ContactsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    ContactManager manager = Provider.of<OverSeer>(context).fetch(ContactManager);
+    ContactManager manager = Provider.of(context).fetch(ContactManager);
     return Scaffold(
         appBar: AppBar(
           title: Text('Contacts'),

@@ -6,7 +6,10 @@ class OverSeer {
   OverSeer() {
     register(ContactManager, ContactManager());
   }
-  register(name, object) => repository[name] = object;
+
+  register(name, object) {
+    repository[name] = object;
+  }
 
   fetch(name) => repository[name];
 }
