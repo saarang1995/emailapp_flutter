@@ -6,17 +6,28 @@ import 'package:emailapp/services/contact_service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ContactManager {
-  // Stream<List<Contact>> get contactsListView =>
-  //     Stream.fromFuture(ContactService.browse());
+  final PublishSubject<String> _filterSubject = PublishSubject<String>();
+  final PublishSubject<List<Contact>> _collectionSubject =
+      PublishSubject<List<Contact>>();
 
-  Stream<List<Contact>> browse$({String query}) =>
-      Stream.fromFuture(ContactService.browse(query: query));
+  Sink<String> get inFilter => _filterSubject.sink;
 
-  final BehaviorSubject<int> _contactCounter = BehaviorSubject<int>();
+  Stream<List<Contact>> get browse$ => _collectionSubject.stream;
 
-  Stream<int> get count$ => _contactCounter.stream;
+  final BehaviorSubject<int> _countSubject = BehaviorSubject<int>();
+
+  Stream<int> get count$ => _countSubject.stream;
 
   ContactManager() {
-    browse$().listen((data) => _contactCounter.add(data.length));
+    _filterSubject.stream.listen((filter) async {
+      List<Contact> contacts = await ContactService.browse(query: filter);
+      _collectionSubject.add(contacts);
+    });
+    _collectionSubject.listen((data) => _countSubject.add(data.length));
+  }
+
+  void dispose() {
+    _countSubject.close();
+    _filterSubject.close();
   }
 }

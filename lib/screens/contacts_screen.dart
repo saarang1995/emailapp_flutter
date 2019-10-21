@@ -11,6 +11,7 @@ class ContactsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ContactManager manager = Provider.of(context).fetch(ContactManager);
+    manager.inFilter.add('');
     return Scaffold(
         appBar: AppBar(
           title: Text('Contacts'),
@@ -27,7 +28,7 @@ class ContactsScreen extends StatelessWidget {
         ),
         drawer: NavigationDrawer(),
         body: ContactListBuilder(
-          stream: manager.browse$(),
+          stream: manager.browse$,
           builder: (context, contacts) {
             return ListView.separated(
                 itemCount: contacts.length,
