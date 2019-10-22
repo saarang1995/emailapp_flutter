@@ -1,5 +1,9 @@
+import 'package:emailapp/managers/message_form_manager.dart';
 import 'package:emailapp/models/Message.dart';
+import 'package:emailapp/observer.dart';
+import 'package:emailapp/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 class MessageCompose extends StatefulWidget {
   @override
@@ -13,6 +17,8 @@ class _MessageComposeState extends State<MessageCompose> {
   final key = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    MessageFormManager manager = Provider.of(context).fetch(MessageFormManager);
+
     return Scaffold(
         appBar: AppBar(
           title: Text('Compose new Message'),
@@ -23,16 +29,25 @@ class _MessageComposeState extends State<MessageCompose> {
             child: Column(
               children: <Widget>[
                 ListTile(
-                  title: TextFormField(
-                    validator: (value) => !value.contains('@')
-                        ? '`To` must be a valid email.'
-                        : null,
-                    decoration: InputDecoration(
-                        labelText: 'TO',
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold)),
-                    onSaved: (value) => to = value,
-                  ),
-                ),
+                    title: Observer(
+                  stream: manager.email$,
+                  onSuccess: (context, data) {
+                    return TextField(
+                      onChanged: manager.inEmail.add,
+                      decoration: InputDecoration(
+                          labelText: 'TO',
+                          labelStyle: TextStyle(fontWeight: FontWeight.bold)),
+                    );
+                  },
+                  onError: (context, error) {
+                    return TextField(
+                      decoration: InputDecoration(
+                          labelText: 'TO ()',
+                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          errorText: "This field is invalid"),
+                    );
+                  },
+                )),
                 ListTile(
                   title: TextFormField(
                     validator: (value) {

@@ -1,3 +1,4 @@
+import 'package:emailapp/compose_button.dart';
 import 'package:emailapp/message_list.dart';
 import 'package:emailapp/navigation_drawer.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class InboxScreen extends StatelessWidget {
             MessageList(status: "others")
           ],
         ),
+        floatingActionButton: ComposeButton([]),
       ),
       length: 2,
     );

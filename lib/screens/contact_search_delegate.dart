@@ -28,12 +28,17 @@ class ContactSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
+    return Container();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
     ContactManager manager = Provider.of(context).fetch(ContactManager);
-    if (query.length < 3) {
-      return Center(
-        child: Text('Type more than 3 characters.'),
-      );
-    }
+    // if (query.length < 3) {
+    //   return Center(
+    //     child: Text('Type more than 3 characters.'),
+    //   );
+    // }
 
     manager.inFilter.add(query);
     return ContactListBuilder(
@@ -51,10 +56,5 @@ class ContactSearchDelegate extends SearchDelegate {
               },
               separatorBuilder: (BuildContext context, int index) => Divider());
         });
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    return Container();
   }
 }
